@@ -17,18 +17,18 @@
           <div class="card-header bg-dark text-center py-4 text-white" style="background-color: #0A382C !important;">
             <div class="fs-1 text-warning mb-2"><i class="bi bi-shield-lock-fill"></i></div>
             <h4 class="fw-bold text-white mb-1">PRABHU SECURITY SOLUTIONS</h4>
-            <p class="text-light small mb-0">Authorized Admin Portal (L. CHIRU)</p>
+            <p class="text-light small mb-0">Authorized Admin Portal</p>
           </div>
           <div class="card-body p-4 bg-white">
             
             <div id="login-alert" class="alert alert-danger d-none" role="alert"></div>
 
-            <form id="admin-login-form">
+            <form id="admin-login-form" autocomplete="off">
               <div class="mb-3">
                 <label class="form-label text-success-dark fw-bold">Admin Username</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                  <input type="text" id="username" class="form-control" placeholder="Enter admin username" required value="Lankaprabhu">
+                  <input type="text" id="username" class="form-control" placeholder="Enter admin username" required autocomplete="username">
                 </div>
               </div>
 
@@ -36,7 +36,7 @@
                 <label class="form-label text-success-dark fw-bold">Password</label>
                 <div class="input-group">
                   <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
-                  <input type="password" id="password" class="form-control" placeholder="Enter password" required value="Chiru@123">
+                  <input type="password" id="password" class="form-control" placeholder="Enter password" required autocomplete="current-password">
                 </div>
               </div>
 
@@ -45,9 +45,6 @@
               </button>
             </form>
 
-            <div class="mt-4 text-center">
-              <span class="text-muted small">Default Credentials: <code>admin</code> / <code>admin123</code></span>
-            </div>
           </div>
           <div class="card-footer text-center bg-light py-3 border-top-0">
             <a href="/" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left me-1"></i> Back to Public Website</a>

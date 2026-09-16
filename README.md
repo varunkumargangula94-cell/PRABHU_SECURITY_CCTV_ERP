@@ -78,13 +78,10 @@ npm run dev
 
 ---
 
-## 🔑 Admin Credentials
+## 🔑 Admin Portal Access
 
-| Field | Value |
-|-------|-------|
-| **Admin Login URL** | `https://prabhu-security-cctv-erp.onrender.com/admin-login.html` |
-| **Username** | `Lankaprabhu` |
-| **Password** | `Chiru@123` |
+- **Admin Login URL**: `https://prabhu-security-cctv-erp.onrender.com/admin-login.html`
+- Access is restricted exclusively to authorized administration. Credentials are fully encrypted with bcrypt password hashing and JWT sessions.
 
 ---
 
