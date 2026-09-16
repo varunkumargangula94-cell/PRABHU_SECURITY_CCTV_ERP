@@ -1,0 +1,482 @@
+/* CCTV Sales & Home Installation - Cream & Dark Green Theme */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  --bg-cream: #FAF7F2;
+  --bg-cream-dark: #F3ECE1;
+  --card-bg: #FFFFFF;
+  --primary-green: #0A382C;
+  --primary-green-hover: #06271E;
+  --accent-green: #134E3D;
+  --gold-accent: #D4AF37;
+  --gold-hover: #B59226;
+  --text-dark: #1E293B;
+  --text-muted: #64748B;
+  --border-color: #E2D9CC;
+  --shadow-sm: 0 4px 6px -1px rgba(10, 56, 44, 0.05);
+  --shadow-md: 0 10px 15px -3px rgba(10, 56, 44, 0.08);
+  --shadow-lg: 0 20px 25px -5px rgba(10, 56, 44, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background-color: var(--bg-cream);
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  color: var(--primary-green);
+}
+
+/* Navbar */
+.navbar-cctv {
+  background-color: var(--primary-green);
+  padding: 1rem 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-cctv .navbar-brand {
+  color: #FFFFFF !important;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-cctv .navbar-brand i {
+  color: var(--gold-accent);
+  font-size: 1.8rem;
+}
+
+.navbar-cctv .nav-link {
+  color: #E2E8F0 !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.2s ease;
+}
+
+.navbar-cctv .nav-link:hover, .navbar-cctv .nav-link.active {
+  color: var(--gold-accent) !important;
+}
+
+.navbar-cctv .btn-book-nav {
+  background-color: var(--gold-accent);
+  color: var(--primary-green);
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1.25rem;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.navbar-cctv .btn-book-nav:hover {
+  background-color: var(--gold-hover);
+  color: #FFFFFF;
+  transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-green) 0%, #06241C 100%);
+  color: #FFFFFF;
+  padding: 5rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(0,0,0,0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.hero-title {
+  font-size: 3rem;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin-bottom: 1.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: #CBD5E1;
+  margin-bottom: 2rem;
+}
+
+.btn-green {
+  background-color: var(--accent-green);
+  color: #FFFFFF;
+  font-weight: 600;
+  padding: 0.8rem 1.75rem;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--accent-green);
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-green:hover {
+  background-color: var(--primary-green-hover);
+  color: var(--gold-accent);
+  border-color: var(--gold-accent);
+  transform: translateY(-2px);
+}
+
+.btn-outline-cream {
+  background-color: transparent;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+  font-weight: 600;
+  padding: 0.8rem 1.75rem;
+  border-radius: var(--radius-sm);
+  transition: all 0.25s ease;
+}
+
+.btn-outline-cream:hover {
+  background-color: #FFFFFF;
+  color: var(--primary-green);
+}
+
+/* Section Styling */
+.section-padding {
+  padding: 4.5rem 0;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.section-title h2 {
+  font-size: 2.25rem;
+  color: var(--primary-green);
+  position: relative;
+  display: inline-block;
+}
+
+.section-title h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 4px;
+  background-color: var(--gold-accent);
+  margin: 10px auto 0 auto;
+  border-radius: 2px;
+}
+
+.section-title p {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+}
+
+/* Feature & Service Cards */
+.cctv-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cctv-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--gold-accent);
+}
+
+.cctv-card-icon {
+  width: 60px;
+  height: 60px;
+  background-color: var(--bg-cream-dark);
+  color: var(--primary-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Product Cards */
+.product-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.product-img-wrapper {
+  position: relative;
+  height: 220px;
+  background-color: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-img-wrapper img {
+  max-height: 180px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-img-wrapper img {
+  transform: scale(1.08);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: var(--primary-green);
+  color: var(--gold-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.product-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.product-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-specs {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.product-specs li {
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-specs li i {
+  color: var(--accent-green);
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-green);
+  margin-top: auto;
+  margin-bottom: 1rem;
+}
+
+/* Booking Form */
+.booking-container {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.form-label {
+  font-weight: 600;
+  color: var(--primary-green);
+  margin-bottom: 0.4rem;
+}
+
+.form-control, .form-select {
+  border-radius: var(--radius-sm);
+  border: 1px solid #CBD5E1;
+  padding: 0.75rem 1rem;
+  background-color: #FAFAFA;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--accent-green);
+  box-shadow: 0 0 0 3px rgba(10, 56, 44, 0.15);
+  background-color: #FFFFFF;
+}
+
+/* Time Slot Radio Chips */
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.slot-btn {
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #FFFFFF;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.slot-btn:hover:not(.disabled) {
+  border-color: var(--accent-green);
+  background-color: var(--bg-cream);
+}
+
+.slot-btn.selected {
+  border-color: var(--accent-green);
+  background-color: var(--primary-green);
+  color: #FFFFFF;
+}
+
+.slot-btn.disabled {
+  background-color: #F1F5F9;
+  color: #94A3B8;
+  border-color: #E2E8F0;
+  cursor: not-allowed;
+  text-decoration: line-through;
+}
+
+/* Gallery Grid */
+.gallery-card {
+  position: relative;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  height: 280px;
+  cursor: pointer;
+}
+
+.gallery-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.gallery-card:hover img {
+  transform: scale(1.08);
+}
+
+.gallery-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 56, 44, 0.9) 0%, rgba(0,0,0,0) 60%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  color: #FFFFFF;
+}
+
+.gallery-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 2px;
+}
+
+.gallery-meta {
+  font-size: 0.85rem;
+  color: var(--gold-accent);
+}
+
+/* Reviews Cards */
+.review-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.star-rating {
+  color: var(--gold-accent);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.review-text {
+  font-style: italic;
+  color: var(--text-dark);
+  margin-bottom: 1.25rem;
+  flex-grow: 1;
+}
+
+.review-author {
+  font-weight: 700;
+  color: var(--primary-green);
+  font-size: 0.95rem;
+}
+
+.review-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Footer */
+footer {
+  background-color: var(--primary-green);
+  color: #E2E8F0;
+  padding: 4rem 0 2rem 0;
+}
+
+footer h5 {
+  color: var(--gold-accent);
+  margin-bottom: 1.25rem;
+}
+
+footer a {
+  color: #CBD5E1;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+footer a:hover {
+  color: var(--gold-accent);
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}

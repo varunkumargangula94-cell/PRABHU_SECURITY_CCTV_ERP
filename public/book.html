@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Book CCTV Home Installation - PRABHU SECURITY SOLUTIONS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-cctv sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>PRABHU SECURITY SOLUTIONS</span>
+      </a>
+      <button class="navbar-toggler text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products.html">CCTV Cameras</a></li>
+          <li class="nav-item"><a class="nav-link" href="/services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link" href="/gallery.html">Recent Work</a></li>
+          <li class="nav-item"><a class="nav-link" href="/reviews.html">Reviews</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact.html">Contact</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a href="/book.html" class="btn btn-book-nav">
+            <i class="bi bi-calendar-check me-1"></i> Book Installation
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Banner -->
+  <header class="py-4 text-white text-center" style="background: linear-gradient(135deg, #0A382C 0%, #06241C 100%);">
+    <div class="container">
+      <h1 class="text-white display-6 mb-1">Book Home Installation</h1>
+      <p class="text-light lead mb-0 small">PRABHU SECURITY SOLUTIONS - No registration required. Select your date and time slot to request doorstep service.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+          <!-- Success Banner Container (Hidden by default) -->
+          <div id="booking-success-box" class="d-none">
+            <div class="card border-0 shadow-lg rounded-4 p-4 p-md-5 text-center bg-white border-top border-5 border-success">
+              <div class="mb-3 text-success">
+                <i class="bi bi-check-circle-fill display-1"></i>
+              </div>
+              <h2 class="fw-bold text-success-dark mb-2">Booking Request Submitted Successfully</h2>
+              <p class="text-muted lead mb-4">Your CCTV installation request has been received by PRABHU SECURITY SOLUTIONS.</p>
+              
+              <div class="bg-light p-4 rounded-3 d-inline-block mx-auto mb-4 border" style="min-width: 320px;">
+                <span class="text-muted small text-uppercase fw-bold">Your Unique Booking ID</span>
+                <h3 class="display-6 fw-bold text-success-dark mb-0 mt-1" id="success-booking-id">CCTV-2026-0001</h3>
+              </div>
+
+              <p class="text-dark fw-medium mb-4"><i class="bi bi-telephone-outbound-fill text-success me-2"></i> L. CHIRU / Our installation manager will call your mobile number shortly regarding confirmation.</p>
+
+              <div>
+                <a href="/" class="btn btn-green btn-lg me-2"><i class="bi bi-house-door me-1"></i> Return to Home</a>
+                <button onclick="window.location.reload()" class="btn btn-outline-secondary btn-lg"><i class="bi bi-plus-circle me-1"></i> Book Another Slot</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Form Wizard -->
+          <div id="booking-form-box" class="booking-container">
+            <div class="text-center mb-4">
+              <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">PRABHU SECURITY SOLUTIONS</span>
+              <h3 class="fw-bold text-success-dark">CCTV Home Installation Request</h3>
+              <p class="text-muted small">Please provide your location details and select an available time slot.</p>
+            </div>
+
+            <div id="booking-alert-error" class="alert alert-danger d-none" role="alert"></div>
+
+            <form id="customer-booking-form">
+              <!-- Section 1: Customer Info -->
+              <h5 class="fw-bold text-success-dark border-bottom pb-2 mb-3">
+                <i class="bi bi-person-fill me-2 text-warning"></i> 1. Contact Information
+              </h5>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                  <input type="text" id="customer_name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+                  <input type="tel" id="mobile" class="form-control" placeholder="10-digit Mobile Number (e.g. 9876543210)" maxlength="10" required>
+                </div>
+              </div>
+
+              <!-- Section 2: Address Details -->
+              <h5 class="fw-bold text-success-dark border-bottom pb-2 mb-3">
+                <i class="bi bi-geo-alt-fill me-2 text-warning"></i> 2. Complete Installation Address
+              </h5>
+              <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                  <label class="form-label">House / Door Number <span class="text-danger">*</span></label>
+                  <input type="text" id="house_number" class="form-control" placeholder="e.g. H.No 12-45/A" required>
+                </div>
+                <div class="col-md-8">
+                  <label class="form-label">Street / Colony / Area <span class="text-danger">*</span></label>
+                  <input type="text" id="street" class="form-control" placeholder="e.g. Subhash Nagar, Jeedimetla" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">City / Town <span class="text-danger">*</span></label>
+                  <input type="text" id="city" class="form-control" placeholder="e.g. Hyderabad" value="Hyderabad" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">State <span class="text-danger">*</span></label>
+                  <input type="text" id="state" class="form-control" placeholder="e.g. Telangana" value="Telangana" required>
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label">Pincode <span class="text-danger">*</span></label>
+                  <input type="text" id="pincode" class="form-control" placeholder="6-digit Pincode (e.g. 500055)" maxlength="6" required>
+                </div>
+              </div>
+
+              <!-- Section 3: CCTV Requirement -->
+              <h5 class="fw-bold text-success-dark border-bottom pb-2 mb-3">
+                <i class="bi bi-camera-video-fill me-2 text-warning"></i> 3. CCTV Requirement
+              </h5>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Camera Package Requirement <span class="text-danger">*</span></label>
+                  <select id="cctv_requirement" class="form-select" required>
+                    <option value="2 Cameras">2 Cameras Package (Entry Level)</option>
+                    <option value="4 Cameras" selected>4 Cameras Package (Standard Home)</option>
+                    <option value="6 Cameras">6 Cameras Package (Villa / Multi-story)</option>
+                    <option value="8 Cameras">8 Cameras Package (Business / Commercial)</option>
+                    <option value="Not Sure">Not Sure / Require Technician Consultation</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Exact Camera Count (Optional)</label>
+                  <input type="number" id="camera_count" class="form-control" placeholder="e.g. 4" min="1" max="64">
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Additional Instructions / Special Requests (Optional)</label>
+                  <textarea id="customer_message" class="form-control" rows="2" placeholder="e.g. Need night vision cameras for main gate. Prefer morning installation."></textarea>
+                </div>
+              </div>
+
+              <!-- Section 4: Preferred Date & Time Slot Selection -->
+              <h5 class="fw-bold text-success-dark border-bottom pb-2 mb-3">
+                <i class="bi bi-clock-fill me-2 text-warning"></i> 4. Preferred Installation Date & Time Slot
+              </h5>
+              <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                  <label class="form-label">Preferred Date <span class="text-danger">*</span></label>
+                  <input type="date" id="installation_date" class="form-control" required>
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Available Time Slots <span class="text-danger">*</span></label>
+                  <p class="text-muted small mb-2">Select an open slot. Grayed out slots are fully booked by other clients.</p>
+                  
+                  <div id="slots-container" class="slot-grid">
+                    <div class="text-muted small">Select a date above to view available time slots...</div>
+                  </div>
+                  <input type="hidden" id="selected_time_slot" required>
+                </div>
+              </div>
+
+              <div class="text-center mt-4">
+                <button type="submit" id="btn-submit-booking" class="btn btn-green btn-lg px-5 py-3 fw-bold">
+                  <i class="bi bi-check-lg me-2"></i> Submit Installation Request
+                </button>
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 PRABHU SECURITY SOLUTIONS. All rights reserved. | <a href="/admin-login.html" class="text-warning text-decoration-none">Admin Portal</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/booking.js"></script>
+</body>
+</html>

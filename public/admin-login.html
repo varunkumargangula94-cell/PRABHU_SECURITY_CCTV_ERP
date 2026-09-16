@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - PRABHU SECURITY SOLUTIONS ERP</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100" style="background: linear-gradient(135deg, #0A382C 0%, #06241C 100%);">
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="card-header bg-dark text-center py-4 text-white" style="background-color: #0A382C !important;">
+            <div class="fs-1 text-warning mb-2"><i class="bi bi-shield-lock-fill"></i></div>
+            <h4 class="fw-bold text-white mb-1">PRABHU SECURITY SOLUTIONS</h4>
+            <p class="text-light small mb-0">Authorized Admin Portal (L. CHIRU)</p>
+          </div>
+          <div class="card-body p-4 bg-white">
+            
+            <div id="login-alert" class="alert alert-danger d-none" role="alert"></div>
+
+            <form id="admin-login-form">
+              <div class="mb-3">
+                <label class="form-label text-success-dark fw-bold">Admin Username</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                  <input type="text" id="username" class="form-control" placeholder="Enter admin username" required value="admin">
+                </div>
+              </div>
+
+              <div class="mb-4">
+                <label class="form-label text-success-dark fw-bold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                  <input type="password" id="password" class="form-control" placeholder="Enter password" required value="admin123">
+                </div>
+              </div>
+
+              <button type="submit" id="btn-login" class="btn btn-green w-100 py-3 fw-bold fs-6">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Login to Dashboard
+              </button>
+            </form>
+
+            <div class="mt-4 text-center">
+              <span class="text-muted small">Default Credentials: <code>admin</code> / <code>admin123</code></span>
+            </div>
+          </div>
+          <div class="card-footer text-center bg-light py-3 border-top-0">
+            <a href="/" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left me-1"></i> Back to Public Website</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin-login.js"></script>
+</body>
+</html>

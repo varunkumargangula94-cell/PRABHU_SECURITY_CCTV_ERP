@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recent Work Gallery - PRABHU SECURITY SOLUTIONS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-cctv sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="/">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>PRABHU SECURITY SOLUTIONS</span>
+      </a>
+      <button class="navbar-toggler text-white border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+        <i class="bi bi-list fs-2"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/products.html">CCTV Cameras</a></li>
+          <li class="nav-item"><a class="nav-link" href="/services.html">Services</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/gallery.html">Recent Work</a></li>
+          <li class="nav-item"><a class="nav-link" href="/reviews.html">Reviews</a></li>
+          <li class="nav-item"><a class="nav-link" href="/about.html">About Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="/contact.html">Contact</a></li>
+        </ul>
+        <div class="d-flex gap-2">
+          <a href="/book.html" class="btn btn-book-nav">
+            <i class="bi bi-calendar-check me-1"></i> Book Installation
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Banner -->
+  <header class="py-5 text-white text-center" style="background: linear-gradient(135deg, #0A382C 0%, #06241C 100%);">
+    <div class="container">
+      <h1 class="text-white display-5 mb-2">Our Recent Work Gallery</h1>
+      <p class="text-light lead mb-0">Browse real CCTV installation photos completed by PRABHU SECURITY SOLUTIONS technicians.</p>
+    </div>
+  </header>
+
+  <main class="section-padding">
+    <div class="container">
+      <!-- Category Filter Tabs -->
+      <div class="d-flex justify-content-center mb-4 flex-wrap gap-2" id="gallery-category-filters">
+        <button class="btn btn-green active" data-category="ALL">All Projects</button>
+        <button class="btn btn-outline-dark" data-category="Home Installation">Home CCTV</button>
+        <button class="btn btn-outline-dark" data-category="Office Installation">Office & NVR Racks</button>
+        <button class="btn btn-outline-dark" data-category="Outdoor Camera">Outdoor Cameras</button>
+        <button class="btn btn-outline-dark" data-category="Indoor Camera">Indoor Cameras</button>
+      </div>
+
+      <div class="row g-4" id="public-gallery-grid">
+        <!-- Dynamically rendered via JS -->
+      </div>
+    </div>
+  </main>
+
+  <!-- Image Lightbox Modal -->
+  <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-success-dark" id="modalImageTitle">Work Detail</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="modalImageSrc" src="" class="img-fluid rounded mb-3" style="max-height: 500px;" alt="Work Photo">
+          <p id="modalImageDesc" class="text-muted"></p>
+          <div class="d-flex justify-content-center gap-3 small text-dark fw-bold">
+            <span id="modalImageCategory" class="badge bg-success"></span>
+            <span id="modalImageLocation"><i class="bi bi-geo-alt-fill me-1 text-danger"></i> Location</span>
+            <span id="modalImageDate"><i class="bi bi-calendar-check me-1 text-primary"></i> Date</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 PRABHU SECURITY SOLUTIONS. All rights reserved. | <a href="/admin-login.html" class="text-warning text-decoration-none">Admin Portal</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/gallery.js"></script>
+</body>
+</html>

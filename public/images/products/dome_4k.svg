@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F1F5F9"/>
+      <stop offset="100%" stop-color="#E2E8F0"/>
+    </linearGradient>
+    <linearGradient id="dome" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0284C7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#0A382C" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <!-- Base Mount -->
+  <rect x="80" y="100" width="240" height="30" rx="6" fill="#64748B"/>
+  <rect x="100" y="130" width="200" height="20" rx="4" fill="#475569"/>
+  <!-- Dome Glass -->
+  <path d="M 120 150 A 80 80 0 0 0 280 150 Z" fill="url(#dome)"/>
+  <!-- Lens Housing -->
+  <circle cx="200" cy="180" r="45" fill="url(#glass)"/>
+  <circle cx="200" cy="180" r="25" fill="#020617"/>
+  <circle cx="200" cy="180" r="12" fill="#38BDF8"/>
+  <circle cx="192" cy="172" r="5" fill="#FFFFFF" opacity="0.6"/>
+  <!-- IR LEDs -->
+  <circle cx="170" cy="180" r="4" fill="#EF4444"/>
+  <circle cx="230" cy="180" r="4" fill="#EF4444"/>
+  <circle cx="200" cy="150" r="4" fill="#EF4444"/>
+  <circle cx="200" cy="210" r="4" fill="#EF4444"/>
+  <!-- 4K Badge -->
+  <rect x="160" y="270" width="80" height="28" rx="14" fill="#0A382C"/>
+  <text x="200" y="289" font-family="sans-serif" font-size="14" font-weight="bold" fill="#D4AF37" text-anchor="middle">4K UHD</text>
+</svg>
