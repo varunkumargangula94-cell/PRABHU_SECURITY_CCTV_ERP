@@ -1,4 +1,4 @@
-/* CCTV Admin Dashboard CSS */
+/* CCTV Admin Dashboard CSS - Mobile & Desktop Responsive */
 :root {
   --admin-sidebar-bg: #0A382C;
   --admin-sidebar-hover: #134E3D;
@@ -9,6 +9,7 @@
 body.admin-body {
   background-color: var(--admin-content-bg);
   min-height: 100vh;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
 
 .admin-wrapper {
@@ -16,7 +17,7 @@ body.admin-body {
   min-height: 100vh;
 }
 
-/* Sidebar */
+/* Sidebar for Desktop */
 .admin-sidebar {
   width: 260px;
   background-color: var(--admin-sidebar-bg);
@@ -24,12 +25,13 @@ body.admin-body {
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
-  z-index: 1000;
+  z-index: 1040;
+  flex-shrink: 0;
 }
 
 .admin-sidebar .brand {
-  padding: 1.5rem;
-  font-size: 1.25rem;
+  padding: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #FFFFFF;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
@@ -43,18 +45,20 @@ body.admin-body {
   padding: 1rem 0;
   margin: 0;
   flex-grow: 1;
+  overflow-y: auto;
 }
 
 .admin-sidebar .nav-item a {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0.85rem 1.5rem;
+  padding: 0.85rem 1.25rem;
   color: #E2E8F0;
   text-decoration: none;
   font-weight: 500;
   transition: all 0.2s ease;
   border-left: 4px solid transparent;
+  min-height: 48px; /* Touch target */
 }
 
 .admin-sidebar .nav-item a:hover {
@@ -78,20 +82,23 @@ body.admin-body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  min-width: 0;
 }
 
 .admin-header {
   background-color: #FFFFFF;
   border-bottom: 1px solid #E2D9CC;
-  padding: 1rem 2rem;
+  padding: 1rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
 }
 
 .admin-content {
-  padding: 2rem;
+  padding: 1.5rem;
   flex-grow: 1;
 }
 
@@ -99,10 +106,11 @@ body.admin-body {
 .stat-card {
   background-color: #FFFFFF;
   border: 1px solid #E2D9CC;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.25rem;
   box-shadow: 0 4px 6px -1px rgba(10, 56, 44, 0.05);
   transition: transform 0.2s ease;
+  height: 100%;
 }
 
 .stat-card:hover {
@@ -111,25 +119,25 @@ body.admin-body {
 }
 
 .stat-card .icon-box {
-  width: 50px;
-  height: 50px;
+  width: 46px;
+  height: 46px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 }
 
 .stat-card .stat-value {
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: 700;
   color: #0A382C;
   line-height: 1;
-  margin: 8px 0 4px 0;
+  margin: 6px 0 4px 0;
 }
 
 .stat-card .stat-label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #64748B;
   text-uppercase;
   letter-spacing: 0.5px;
@@ -141,8 +149,8 @@ body.admin-body {
   background-color: #FFFFFF;
   border: 2px solid #F59E0B;
   border-left: 6px solid #F59E0B;
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 14px;
+  padding: 1.25rem;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
   margin-bottom: 1.25rem;
   position: relative;
@@ -176,6 +184,41 @@ body.admin-body {
   top: 20px;
   right: 20px;
   z-index: 9999;
-  min-width: 320px;
+  min-width: 300px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Mobile Responsiveness Improvements */
+@media (max-width: 991.98px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -270px;
+    height: 100vh;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+  }
+
+  .admin-sidebar.show {
+    left: 0;
+  }
+
+  .admin-content {
+    padding: 1rem;
+  }
+
+  .admin-header {
+    padding: 0.75rem 1rem;
+  }
+}
+
+.mobile-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1035;
+}
+
+.mobile-overlay.show {
+  display: block;
 }

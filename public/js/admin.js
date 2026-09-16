@@ -1,16 +1,18 @@
 // CCTV Admin Portal Management Engine
 let socket;
 let currentBookingData = [];
+let windowProductsMap = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAdminAuth();
   initSocketIO();
   setupTabNavigation();
+  setupMobileDrawer();
   loadAdminDashboardData();
   setupFormListeners();
 });
 
-// Authorization Security Verification
+// Security Verification
 function checkAdminAuth() {
   const token = localStorage.getItem('adminToken');
   if (!token) {
@@ -20,7 +22,7 @@ function checkAdminAuth() {
   const user = JSON.parse(localStorage.getItem('adminUser') || '{}');
   const display = document.getElementById('admin-user-display');
   if (display && user.full_name) {
-    display.innerHTML = `<i class="bi bi-person-circle me-1 text-warning"></i> ${user.full_name}`;
+    display.innerHTML = `<i class="bi bi-person-circle me-1 text-warning"></i> ${user.full_name} (Admin)`;
   }
 }
 
@@ -31,14 +33,36 @@ function getAuthHeaders() {
   };
 }
 
-// Initialize Socket.io Real-Time Event Connection
+// Mobile Navigation Sidebar Drawer
+function setupMobileDrawer() {
+  const toggleBtn = document.getElementById('btn-toggle-sidebar');
+  const closeBtn = document.getElementById('btn-close-sidebar');
+  const drawer = document.getElementById('sidebar-drawer');
+  const backdrop = document.getElementById('mobile-backdrop');
+
+  if (toggleBtn && drawer && backdrop) {
+    toggleBtn.addEventListener('click', () => {
+      drawer.classList.add('show');
+      backdrop.classList.add('show');
+    });
+
+    const hideDrawer = () => {
+      drawer.classList.remove('show');
+      backdrop.classList.remove('show');
+    };
+
+    if (closeBtn) closeBtn.addEventListener('click', hideDrawer);
+    backdrop.addEventListener('click', hideDrawer);
+  }
+}
+
+// Socket.io Real-Time Event Connection
 function initSocketIO() {
   try {
     socket = io();
     socket.emit('join_admin');
 
     socket.on('new_booking', (data) => {
-      console.log('🔔 Socket.io New Booking Alert:', data);
       showRealtimeToast(data.message, data.booking);
       loadAdminDashboardData();
       if (document.getElementById('tab-bookings').classList.contains('active')) {
@@ -82,6 +106,12 @@ function setupTabNavigation() {
       e.preventDefault();
       const tabId = link.getAttribute('data-tab');
       switchTab(tabId);
+      
+      // Auto close drawer on mobile screen tap
+      const drawer = document.getElementById('sidebar-drawer');
+      const backdrop = document.getElementById('mobile-backdrop');
+      if (drawer) drawer.classList.remove('show');
+      if (backdrop) backdrop.classList.remove('show');
     });
   });
 
@@ -106,10 +136,10 @@ function switchTab(tabId) {
   if (tabId === 'tab-dashboard') loadAdminDashboardData();
   if (tabId === 'tab-new-work') loadNewWorkDedicated();
   if (tabId === 'tab-bookings') loadBookingsTable();
+  if (tabId === 'tab-products') loadAdminProducts();
   if (tabId === 'tab-timeslots') loadAdminTimeSlots();
   if (tabId === 'tab-reviews') loadAdminReviews('ALL');
   if (tabId === 'tab-gallery') loadAdminGallery();
-  if (tabId === 'tab-products') loadAdminProducts();
   if (tabId === 'tab-services') loadAdminServices();
 }
 
@@ -133,7 +163,6 @@ async function loadAdminDashboardData() {
       document.getElementById('stat-approved-reviews').textContent = s.approved_reviews;
       document.getElementById('stat-work-photos').textContent = s.total_work_photos;
 
-      // Update sidebar badge counters
       const badgeNew = document.getElementById('badge-new-count');
       if (badgeNew) {
         badgeNew.textContent = s.new_requests;
@@ -174,7 +203,7 @@ function renderNewWorkCards(bookings, container) {
 
       <div class="row g-2 mb-3">
         <div class="col-md-3">
-          <strong>Mobile:</strong> <a href="tel:${b.mobile}" class="text-decoration-none fw-bold text-success-dark"><i class="bi bi-telephone-fill me-1"></i> ${b.mobile}</a>
+          <strong>Mobile:</strong> <a href="tel:${b.mobile}" class="text-decoration-none fw-bold text-success-dark fs-6"><i class="bi bi-telephone-fill me-1"></i> ${b.mobile}</a>
         </div>
         <div class="col-md-4">
           <strong>Address:</strong> ${b.house_number}, ${b.street}, ${b.city}, ${b.state} - ${b.pincode}
@@ -192,11 +221,11 @@ function renderNewWorkCards(bookings, container) {
       </div>
 
       <div class="d-flex flex-wrap gap-2">
-        <button class="btn btn-sm btn-outline-dark" onclick="viewBookingDetails(${b.id})"><i class="bi bi-eye"></i> View Details</button>
-        <button class="btn btn-sm btn-primary" onclick="updateBookingStatus(${b.id}, 'ACCEPTED')"><i class="bi bi-check-lg"></i> Accept</button>
-        <button class="btn btn-sm btn-info text-white" onclick="updateBookingStatus(${b.id}, 'ASSIGNED')"><i class="bi bi-person-check"></i> Assign</button>
-        <button class="btn btn-sm btn-success" onclick="updateBookingStatus(${b.id}, 'COMPLETED')"><i class="bi bi-check-circle"></i> Mark Completed</button>
-        <button class="btn btn-sm btn-outline-danger" onclick="updateBookingStatus(${b.id}, 'CANCELLED')"><i class="bi bi-x-circle"></i> Cancel</button>
+        <button class="btn btn-sm btn-outline-dark py-2" onclick="viewBookingDetails(${b.id})"><i class="bi bi-eye"></i> View Details</button>
+        <button class="btn btn-sm btn-primary py-2" onclick="updateBookingStatus(${b.id}, 'ACCEPTED')"><i class="bi bi-check-lg"></i> Accept</button>
+        <button class="btn btn-sm btn-info text-white py-2" onclick="updateBookingStatus(${b.id}, 'ASSIGNED')"><i class="bi bi-person-check"></i> Assign</button>
+        <button class="btn btn-sm btn-success py-2" onclick="updateBookingStatus(${b.id}, 'COMPLETED')"><i class="bi bi-check-circle"></i> Mark Completed</button>
+        <button class="btn btn-sm btn-outline-danger py-2" onclick="updateBookingStatus(${b.id}, 'CANCELLED')"><i class="bi bi-x-circle"></i> Cancel</button>
       </div>
     </div>
   `).join('');
@@ -358,6 +387,117 @@ async function updateBookingStatus(id, newStatus) {
     }
   } catch (err) {
     console.error('Error updating status:', err);
+  }
+}
+
+// Load Products Admin View with Full Edit, Price Update, Photo Upload & Delete
+async function loadAdminProducts() {
+  const grid = document.getElementById('admin-products-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '<div class="col-12 text-center text-muted py-4"><div class="spinner-border text-success"></div> Loading products...</div>';
+
+  try {
+    const res = await fetch('/api/admin/products', { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success && data.products.length > 0) {
+      windowProductsMap = {};
+      data.products.forEach(p => windowProductsMap[p.id] = p);
+
+      grid.innerHTML = data.products.map(p => `
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+            <div class="position-relative bg-light text-center p-3" style="height: 180px;">
+              <img src="${p.image_url}" class="h-100 w-auto" style="max-height: 150px; object-fit: contain;" alt="${p.name}">
+              <span class="badge ${p.is_active ? 'bg-success' : 'bg-secondary'} position-absolute top-0 end-0 m-2">${p.is_active ? 'ACTIVE' : 'HIDDEN'}</span>
+              <span class="badge bg-dark text-warning position-absolute top-0 start-0 m-2">${p.type}</span>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <h5 class="fw-bold text-success-dark mb-1">${p.name}</h5>
+              <div class="display-6 fw-bold text-success mb-2" style="font-size: 1.5rem;">₹${p.price.toLocaleString('en-IN')}</div>
+              
+              <ul class="list-unstyled small text-muted mb-3">
+                <li><i class="bi bi-camera me-1"></i> <strong>Res:</strong> ${p.resolution || 'Standard'}</li>
+                <li><i class="bi bi-moon-stars me-1"></i> <strong>Night Vision:</strong> ${p.night_vision || 'Standard'}</li>
+                <li><i class="bi bi-hdd me-1"></i> <strong>Storage:</strong> ${p.storage_option || 'SD Card'}</li>
+              </ul>
+              
+              <p class="text-muted small mb-3 flex-grow-1">${p.description || ''}</p>
+
+              <div class="d-flex gap-2 mt-auto">
+                <button class="btn btn-sm btn-outline-primary flex-grow-1 py-2 fw-bold" onclick="openEditProductModal(${p.id})">
+                  <i class="bi bi-pencil-square me-1"></i> Edit Details & Price
+                </button>
+                <button class="btn btn-sm btn-outline-danger py-2" onclick="deleteProduct(${p.id})">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      grid.innerHTML = '<div class="col-12 text-center text-muted py-5">No products found. Click "Add New Camera Product" above.</div>';
+    }
+  } catch (err) {
+    console.error('Error loading admin products:', err);
+  }
+}
+
+// Open Add Product Modal
+function openAddProductModal() {
+  document.getElementById('product-form').reset();
+  document.getElementById('prod_id').value = '';
+  document.getElementById('productModalTitle').innerHTML = '<i class="bi bi-camera-video me-2"></i> Add New Camera Product';
+  document.getElementById('product-modal-alert').innerHTML = '';
+  document.getElementById('prod_is_active').checked = true;
+
+  const modal = new bootstrap.Modal(document.getElementById('addEditProductModal'));
+  modal.show();
+}
+
+// Open Edit Product Modal Pre-filled
+function openEditProductModal(id) {
+  const p = windowProductsMap[id];
+  if (!p) return;
+
+  document.getElementById('product-form').reset();
+  document.getElementById('prod_id').value = p.id;
+  document.getElementById('productModalTitle').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Camera Product & Price';
+  document.getElementById('product-modal-alert').innerHTML = '';
+
+  document.getElementById('prod_name').value = p.name;
+  document.getElementById('prod_price').value = p.price;
+  document.getElementById('prod_type').value = p.type;
+  document.getElementById('prod_resolution').value = p.resolution || '';
+  document.getElementById('prod_night_vision').value = p.night_vision || '';
+  document.getElementById('prod_storage').value = p.storage_option || '';
+  document.getElementById('prod_description').value = p.description || '';
+  document.getElementById('prod_is_active').checked = (p.is_active === 1);
+
+  const modal = new bootstrap.Modal(document.getElementById('addEditProductModal'));
+  modal.show();
+}
+
+// Delete Product
+async function deleteProduct(id) {
+  const p = windowProductsMap[id];
+  const prodName = p ? p.name : 'this product';
+  if (!confirm(`Are you sure you want to permanently delete "${prodName}"?`)) return;
+
+  try {
+    const res = await fetch(`/api/admin/products/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadAdminProducts();
+    } else {
+      alert(data.message || 'Failed to delete product.');
+    }
+  } catch (err) {
+    console.error('Error deleting product:', err);
   }
 }
 
@@ -539,30 +679,6 @@ async function deleteWorkPhoto(id) {
   }
 }
 
-// Load Products Admin View
-async function loadAdminProducts() {
-  const grid = document.getElementById('admin-products-grid');
-  if (!grid) return;
-
-  try {
-    const res = await fetch('/api/admin/products', { headers: getAuthHeaders() });
-    const data = await res.json();
-    if (data.success) {
-      grid.innerHTML = data.products.map(p => `
-        <div class="col-md-6 col-lg-4">
-          <div class="card border-0 shadow-sm rounded-4 p-3">
-            <h6 class="fw-bold text-success-dark">${p.name}</h6>
-            <div class="text-success fw-bold fs-5 mb-2">₹${p.price.toLocaleString('en-IN')}</div>
-            <div class="small text-muted">${p.type} • ${p.resolution}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-  } catch (err) {
-    console.error('Error loading products:', err);
-  }
-}
-
 // Load Services Admin View
 async function loadAdminServices() {
   const grid = document.getElementById('admin-services-grid');
@@ -586,9 +702,77 @@ async function loadAdminServices() {
   }
 }
 
-// Setup Form Handlers for Work Photo Upload & Custom Time Slot Creation
+// Setup Form Handlers
 function setupFormListeners() {
-  // Add Work Photo Upload Form (Multipart Data)
+  // Product Create / Edit Form Handler (Multipart Data)
+  const productForm = document.getElementById('product-form');
+  if (productForm) {
+    productForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('product-modal-alert');
+      const prodId = document.getElementById('prod_id').value;
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('prod_name').value);
+      formData.append('price', document.getElementById('prod_price').value);
+      formData.append('type', document.getElementById('prod_type').value);
+      formData.append('resolution', document.getElementById('prod_resolution').value);
+      formData.append('night_vision', document.getElementById('prod_night_vision').value);
+      formData.append('storage_option', document.getElementById('prod_storage').value);
+      formData.append('description', document.getElementById('prod_description').value);
+      formData.append('is_active', document.getElementById('prod_is_active').checked ? 1 : 0);
+
+      const fileInput = document.getElementById('prod_image_file');
+      if (fileInput.files.length > 0) {
+        formData.append('image', fileInput.files[0]);
+      }
+
+      const btnSave = document.getElementById('btn-save-product');
+      btnSave.disabled = true;
+      btnSave.textContent = 'Saving Camera Product...';
+
+      try {
+        const token = localStorage.getItem('adminToken');
+        const url = prodId ? `/api/admin/products/${prodId}` : '/api/admin/products';
+        const method = prodId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alertBox.className = 'alert alert-success';
+          alertBox.textContent = data.message || '✅ Product saved successfully.';
+          setTimeout(() => {
+            const modalEl = document.getElementById('addEditProductModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            alertBox.className = '';
+            alertBox.textContent = '';
+            btnSave.disabled = false;
+            btnSave.textContent = 'Save Camera Product';
+            loadAdminProducts();
+          }, 1200);
+        } else {
+          alertBox.className = 'alert alert-danger';
+          alertBox.textContent = data.message || 'Failed to save product.';
+          btnSave.disabled = false;
+          btnSave.textContent = 'Save Camera Product';
+        }
+      } catch (err) {
+        console.error('Error saving product:', err);
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = 'Server communication error.';
+        btnSave.disabled = false;
+        btnSave.textContent = 'Save Camera Product';
+      }
+    });
+  }
+
+  // Work Photo Upload Form
   const photoForm = document.getElementById('add-work-photo-form');
   if (photoForm) {
     photoForm.addEventListener('submit', async (e) => {
@@ -631,7 +815,7 @@ function setupFormListeners() {
             alertBox.textContent = '';
             loadAdminGallery();
             loadAdminDashboardData();
-          }, 1500);
+          }, 1200);
         } else {
           alertBox.className = 'alert alert-danger';
           alertBox.textContent = data.message || 'Upload failed.';
