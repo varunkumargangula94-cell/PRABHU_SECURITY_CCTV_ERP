@@ -123,19 +123,22 @@ function initDatabase() {
 }
 
 function seedData() {
-  // Seed Default Admin User
-  const adminCheck = db.prepare('SELECT COUNT(*) as count FROM admin_users').get();
-  if (adminCheck.count === 0) {
-    const defaultUser = process.env.ADMIN_DEFAULT_USER || 'Lankaprabhu';
-    const defaultPass = process.env.ADMIN_DEFAULT_PASS || 'Chiru@123';
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(defaultPass, salt);
-    
+  // Seed / Upsert Default Admin User
+  const defaultUser = process.env.ADMIN_DEFAULT_USER || 'Lankaprabhu';
+  const defaultPass = process.env.ADMIN_DEFAULT_PASS || 'Chiru@123';
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(defaultPass, salt);
+  
+  const existingAdmin = db.prepare('SELECT * FROM admin_users WHERE username = ?').get(defaultUser);
+  if (!existingAdmin) {
     db.prepare(`
       INSERT INTO admin_users (username, password_hash, full_name, email)
       VALUES (?, ?, ?, ?)
     `).run(defaultUser, hash, 'L. CHIRU', 'lankachiranjeevi1996@gmail.com');
-    console.log(`✅ Default admin created: Username "${defaultUser}", Password "${defaultPass}"`);
+    console.log(`✅ Admin created: Username "${defaultUser}"`);
+  } else {
+    db.prepare('UPDATE admin_users SET password_hash = ? WHERE username = ?').run(hash, defaultUser);
+    console.log(`✅ Admin password updated for "${defaultUser}"`);
   }
 
   // Seed Default Time Slots
