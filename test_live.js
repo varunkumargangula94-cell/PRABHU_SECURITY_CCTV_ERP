@@ -96,6 +96,21 @@ async function testLiveDeployment() {
     console.error('❌ Live Admin Login Failed:', loginRes.body);
   }
 
+  // 4. Check Live Public Combo Offers
+  console.log('\n4️⃣ Verifying Live Public Combo Offers...');
+  const comboRes = await makeHttpsRequest({
+    hostname: 'prabhu-security-cctv-erp.onrender.com',
+    port: 443,
+    path: '/api/combo-offers',
+    method: 'GET'
+  });
+
+  if (comboRes.status === 200 && comboRes.body.combo_offers?.length > 0) {
+    console.log(`✅ LIVE COMBO OFFERS VERIFIED! Total Live Combos: ${comboRes.body.combo_offers.length}`);
+  } else {
+    console.error('❌ Live Combo Offers Fetch Failed:', comboRes.body);
+  }
+
   console.log('\n🎉 LIVE PRODUCTION DEPLOYMENT & TEST BOOKING FULLY VERIFIED!');
 }
 
