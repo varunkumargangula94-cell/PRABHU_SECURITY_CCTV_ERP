@@ -2,6 +2,7 @@
 let socket;
 let currentBookingData = [];
 let windowProductsMap = {};
+let windowCombosMap = {};
 
 document.addEventListener('DOMContentLoaded', () => {
   checkAdminAuth();
@@ -136,6 +137,7 @@ function switchTab(tabId) {
   if (tabId === 'tab-dashboard') loadAdminDashboardData();
   if (tabId === 'tab-new-work') loadNewWorkDedicated();
   if (tabId === 'tab-bookings') loadBookingsTable();
+  if (tabId === 'tab-combos') loadAdminComboOffers();
   if (tabId === 'tab-products') loadAdminProducts();
   if (tabId === 'tab-timeslots') loadAdminTimeSlots();
   if (tabId === 'tab-reviews') loadAdminReviews('ALL');
@@ -501,6 +503,129 @@ async function deleteProduct(id) {
   }
 }
 
+// Load Combo Offers Admin View
+async function loadAdminComboOffers() {
+  const grid = document.getElementById('admin-combos-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '<div class="col-12 text-center text-muted py-4"><div class="spinner-border text-success"></div> Loading combo offers...</div>';
+
+  try {
+    const res = await fetch('/api/admin/combo-offers', { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success && data.combo_offers.length > 0) {
+      windowCombosMap = {};
+      data.combo_offers.forEach(c => windowCombosMap[c.id] = c);
+
+      grid.innerHTML = data.combo_offers.map(c => {
+        const features = typeof c.features === 'string' ? JSON.parse(c.features || '[]') : (c.features || []);
+        const origPriceText = c.original_price ? `<span class="text-decoration-line-through text-muted me-2 fs-6">₹${c.original_price.toLocaleString('en-IN')}</span>` : '';
+
+        return `
+          <div class="col-md-6 col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 d-flex flex-column">
+              <div class="card-header bg-dark text-white p-3 border-0" style="background-color: #0A382C !important;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge ${c.badge === 'BEST VALUE COMBO' ? 'bg-warning text-dark' : 'bg-success'} fw-bold">${c.badge || 'COMBO'}</span>
+                  <span class="badge ${c.is_active ? 'bg-success' : 'bg-secondary'}">${c.is_active ? 'ACTIVE' : 'HIDDEN'}</span>
+                </div>
+                <h5 class="fw-bold text-white mb-0">${c.title}</h5>
+                <div class="text-light small">${c.subtitle || ''}</div>
+              </div>
+              <div class="card-body d-flex flex-column p-3">
+                <div class="mb-2">
+                  <div class="d-flex align-items-baseline">
+                    ${origPriceText}
+                    <span class="fs-4 fw-bold text-success">₹${c.offer_price.toLocaleString('en-IN')}</span>
+                  </div>
+                  <span class="small text-muted"><i class="bi bi-camera me-1"></i>${c.camera_count} Cameras Included</span>
+                </div>
+                <p class="text-muted small mb-2">${c.description || ''}</p>
+                <div class="fw-bold text-dark small mb-1"><i class="bi bi-box-seam text-warning me-1"></i> Included Items:</div>
+                <ul class="list-unstyled small mb-3 flex-grow-1 text-muted">
+                  ${features.map(f => `<li><i class="bi bi-check-circle-fill text-success me-1"></i> ${f}</li>`).join('')}
+                </ul>
+                <div class="d-flex gap-2 mt-auto">
+                  <button class="btn btn-sm btn-outline-primary flex-grow-1 py-2 fw-bold" onclick="openEditComboModal(${c.id})">
+                    <i class="bi bi-pencil-square me-1"></i> Edit Combo & Price
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger py-2" onclick="deleteComboOffer(${c.id})">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      grid.innerHTML = '<div class="col-12 text-center text-muted py-5">No combo offers found. Click "Add New Combo Offer" above.</div>';
+    }
+  } catch (err) {
+    console.error('Error loading admin combos:', err);
+  }
+}
+
+// Open Add Combo Modal
+function openAddComboModal() {
+  document.getElementById('combo-form').reset();
+  document.getElementById('combo_id').value = '';
+  document.getElementById('comboModalTitle').innerHTML = '<i class="bi bi-tags-fill me-2 text-warning"></i> Add New Combo Offer (Cameras + Work)';
+  document.getElementById('combo-modal-alert').innerHTML = '';
+  document.getElementById('combo_is_active').checked = true;
+
+  const modal = new bootstrap.Modal(document.getElementById('addEditComboModal'));
+  modal.show();
+}
+
+// Open Edit Combo Modal
+function openEditComboModal(id) {
+  const c = windowCombosMap[id];
+  if (!c) return;
+
+  document.getElementById('combo-form').reset();
+  document.getElementById('combo_id').value = c.id;
+  document.getElementById('comboModalTitle').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Combo Offer & Pricing';
+  document.getElementById('combo-modal-alert').innerHTML = '';
+
+  document.getElementById('combo_title').value = c.title;
+  document.getElementById('combo_badge').value = c.badge || '';
+  document.getElementById('combo_subtitle').value = c.subtitle || '';
+  document.getElementById('combo_offer_price').value = c.offer_price;
+  document.getElementById('combo_original_price').value = c.original_price || '';
+  document.getElementById('combo_camera_count').value = c.camera_count || 4;
+
+  const featuresArr = typeof c.features === 'string' ? JSON.parse(c.features || '[]') : (c.features || []);
+  document.getElementById('combo_features').value = featuresArr.join('\n');
+  document.getElementById('combo_description').value = c.description || '';
+  document.getElementById('combo_is_active').checked = (c.is_active === 1);
+
+  const modal = new bootstrap.Modal(document.getElementById('addEditComboModal'));
+  modal.show();
+}
+
+// Delete Combo Offer
+async function deleteComboOffer(id) {
+  const c = windowCombosMap[id];
+  const title = c ? c.title : 'this combo offer';
+  if (!confirm(`Are you sure you want to permanently delete "${title}"?`)) return;
+
+  try {
+    const res = await fetch(`/api/admin/combo-offers/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadAdminComboOffers();
+    } else {
+      alert(data.message || 'Failed to delete combo offer.');
+    }
+  } catch (err) {
+    console.error('Error deleting combo offer:', err);
+  }
+}
+
 // Load Time Slots Admin
 async function loadAdminTimeSlots() {
   const grid = document.getElementById('admin-timeslots-grid');
@@ -704,6 +829,79 @@ async function loadAdminServices() {
 
 // Setup Form Handlers
 function setupFormListeners() {
+  // Combo Offer Create / Edit Form Handler (Multipart Data)
+  const comboForm = document.getElementById('combo-form');
+  if (comboForm) {
+    comboForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const alertBox = document.getElementById('combo-modal-alert');
+      const comboId = document.getElementById('combo_id').value;
+
+      const formData = new FormData();
+      formData.append('title', document.getElementById('combo_title').value);
+      formData.append('subtitle', document.getElementById('combo_subtitle').value);
+      formData.append('badge', document.getElementById('combo_badge').value);
+      formData.append('offer_price', document.getElementById('combo_offer_price').value);
+      formData.append('original_price', document.getElementById('combo_original_price').value);
+      formData.append('camera_count', document.getElementById('combo_camera_count').value);
+
+      const rawFeatures = document.getElementById('combo_features').value;
+      const featuresArr = rawFeatures.split('\n').map(s => s.trim()).filter(Boolean);
+      formData.append('features', JSON.stringify(featuresArr));
+
+      formData.append('description', document.getElementById('combo_description').value);
+      formData.append('is_active', document.getElementById('combo_is_active').checked ? 1 : 0);
+
+      const fileInput = document.getElementById('combo_image_file');
+      if (fileInput.files.length > 0) {
+        formData.append('image', fileInput.files[0]);
+      }
+
+      const btnSave = document.getElementById('btn-save-combo');
+      btnSave.disabled = true;
+      btnSave.textContent = 'Saving Combo Offer...';
+
+      try {
+        const token = localStorage.getItem('adminToken');
+        const url = comboId ? `/api/admin/combo-offers/${comboId}` : '/api/admin/combo-offers';
+        const method = comboId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+
+        const data = await res.json();
+        if (data.success) {
+          alertBox.className = 'alert alert-success';
+          alertBox.textContent = data.message || '✅ Combo offer saved successfully.';
+          setTimeout(() => {
+            const modalEl = document.getElementById('addEditComboModal');
+            const modal = bootstrap.Modal.getInstance(modalEl);
+            if (modal) modal.hide();
+            alertBox.className = '';
+            alertBox.textContent = '';
+            btnSave.disabled = false;
+            btnSave.textContent = 'Save Combo Offer';
+            loadAdminComboOffers();
+          }, 1200);
+        } else {
+          alertBox.className = 'alert alert-danger';
+          alertBox.textContent = data.message || 'Failed to save combo offer.';
+          btnSave.disabled = false;
+          btnSave.textContent = 'Save Combo Offer';
+        }
+      } catch (err) {
+        console.error('Error saving combo offer:', err);
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = 'Server communication error.';
+        btnSave.disabled = false;
+        btnSave.textContent = 'Save Combo Offer';
+      }
+    });
+  }
+
   // Product Create / Edit Form Handler (Multipart Data)
   const productForm = document.getElementById('product-form');
   if (productForm) {

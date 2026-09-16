@@ -119,6 +119,25 @@ function initDatabase() {
     );
   `);
 
+  // 8. Combo Offers Table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS combo_offers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      subtitle TEXT,
+      camera_count INTEGER DEFAULT 4,
+      original_price REAL NOT NULL,
+      offer_price REAL NOT NULL,
+      badge TEXT DEFAULT 'COMBO OFFER',
+      features_json TEXT,
+      image_url TEXT NOT NULL,
+      description TEXT,
+      is_active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
   seedData();
 }
 
@@ -319,6 +338,75 @@ function seedData() {
     `);
     samplePhotos.forEach(p => stmt.run(p.image_url, p.title, p.description, p.category, p.installation_date, p.location, p.is_visible));
     console.log('✅ Default work gallery photos seeded.');
+  }
+
+  // Seed Default Combo Offers (Cameras + Work = Package Price)
+  const comboCheck = db.prepare('SELECT COUNT(*) as count FROM combo_offers').get();
+  if (comboCheck.count === 0) {
+    const sampleCombos = [
+      {
+        title: '2-Camera Starter Home Combo',
+        subtitle: '2 HD Cameras + DVR + Wiring + Full Installation',
+        camera_count: 2,
+        original_price: 9999.00,
+        offer_price: 7499.00,
+        badge: 'STARTER PACKAGE',
+        features_json: JSON.stringify([
+          '2x 5MP HD Night Vision Bullet/Dome Cameras',
+          '1x 4-Channel DVR + 500GB Hard Drive',
+          'Complete Wiring & Piping Concealed Work',
+          'Free Doorstep Installation & Setup',
+          '24/7 Mobile App Viewing Pairing'
+        ]),
+        image_url: '/images/products/bullet_5mp.svg',
+        description: 'Complete entry-level security package ideal for 1 BHK / 2 BHK home entrances and gates. All inclusive of equipment and installation work.',
+        is_active: 1
+      },
+      {
+        title: '4-Camera Ultimate Villa Combo',
+        subtitle: '4 4K Cameras + 1TB DVR + Wiring + Installation Work',
+        camera_count: 4,
+        original_price: 18999.00,
+        offer_price: 13999.00,
+        badge: 'BEST VALUE COMBO',
+        features_json: JSON.stringify([
+          '4x 4K Ultra HD Color Night Vision Cameras',
+          '1x 8-Channel DVR + 1TB Surveillance HDD',
+          'Up to 100m Heavy Duty Cabling & Fittings Work',
+          'Professional Concealed Installation Work',
+          '1-Year Free On-Site AMC & Warranty'
+        ]),
+        image_url: '/images/products/kit_4cam.svg',
+        description: 'Our most popular all-inclusive home security package. Covers front gate, backyard, driveway, and main entrance with complete installation work.',
+        is_active: 1
+      },
+      {
+        title: '8-Camera Business & Office Combo',
+        subtitle: '8 Cameras + 2TB NVR + Complete Commercial Work',
+        camera_count: 8,
+        original_price: 35999.00,
+        offer_price: 27999.00,
+        badge: 'COMMERCIAL COMBO',
+        features_json: JSON.stringify([
+          '8x 4K IP Audio Security Cameras',
+          '1x 8-Channel PoE NVR + 2TB Hard Drive',
+          'Complete Office/Store Cable Ducting & Work',
+          'Multi-Screen Monitoring Center Setup',
+          'Priority 24/7 Technical Service Support'
+        ]),
+        image_url: '/images/products/ptz_360.svg',
+        description: 'Enterprise grade security combo package for shops, offices, warehouses, and factories. Includes complete wiring, NVR setup, and technician labor.',
+        is_active: 1
+      }
+    ];
+
+    const stmt = db.prepare(`
+      INSERT INTO combo_offers (title, subtitle, camera_count, original_price, offer_price, badge, features_json, image_url, description, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    sampleCombos.forEach(c => stmt.run(c.title, c.subtitle, c.camera_count, c.original_price, c.offer_price, c.badge, c.features_json, c.image_url, c.description, c.is_active));
+    console.log('✅ Default Combo Offers (Cameras + Work) seeded.');
   }
 }
 

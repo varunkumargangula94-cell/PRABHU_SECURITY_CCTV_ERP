@@ -1,5 +1,6 @@
 // Public Website Main Logic
 document.addEventListener('DOMContentLoaded', () => {
+  loadComboOffers();
   loadFeaturedProducts();
   loadServices();
   loadHomeGallery();
@@ -208,4 +209,62 @@ function setupReviewForm() {
       alertBox.innerHTML = '❌ Failed to submit review. Server unreachable.';
     }
   });
+}
+
+// Load Combo Offers (Cameras + Work = Package Price)
+async function loadComboOffers() {
+  const container = document.getElementById('combo-offers-container');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/combo-offers');
+    const data = await res.json();
+    if (data.success && data.combo_offers.length > 0) {
+      container.innerHTML = data.combo_offers.map(c => {
+        const origPriceText = c.original_price ? `<span class="text-decoration-line-through text-muted me-2 fs-6">₹${c.original_price.toLocaleString('en-IN')}</span>` : '';
+        const featuresList = c.features && c.features.length > 0 
+          ? c.features.map(f => `<li><i class="bi bi-check-circle-fill text-success me-2"></i>${f}</li>`).join('')
+          : '<li><i class="bi bi-check-circle-fill text-success me-2"></i>Cameras + Wiring + Installation Work</li>';
+
+        return `
+          <div class="col-md-6 col-lg-4">
+            <div class="card border-2 shadow-sm rounded-4 h-100 overflow-hidden position-relative ${c.badge === 'BEST VALUE COMBO' ? 'border-warning' : 'border-success'}">
+              <div class="card-header bg-dark text-white p-3 border-0" style="background-color: #0A382C !important;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge ${c.badge === 'BEST VALUE COMBO' ? 'bg-warning text-dark' : 'bg-success'} fw-bold">${c.badge}</span>
+                  <span class="text-light small fw-bold"><i class="bi bi-camera me-1"></i>${c.camera_count} Cameras</span>
+                </div>
+                <h4 class="fw-bold text-white mb-0">${c.title}</h4>
+                <div class="text-light small">${c.subtitle || ''}</div>
+              </div>
+              <div class="card-body p-4 d-flex flex-column">
+                <div class="mb-3">
+                  <div class="text-muted small text-uppercase fw-bold">Combo Package Price (Cameras + Work)</div>
+                  <div class="d-flex align-items-baseline">
+                    ${origPriceText}
+                    <span class="display-6 fw-bold text-success-dark">₹${c.offer_price.toLocaleString('en-IN')}</span>
+                  </div>
+                </div>
+
+                <p class="text-muted small mb-3">${c.description || ''}</p>
+
+                <div class="fw-bold text-dark small mb-2"><i class="bi bi-box-seam me-1 text-warning"></i> What is Included:</div>
+                <ul class="list-unstyled small mb-4 flex-grow-1" style="line-height: 1.8;">
+                  ${featuresList}
+                </ul>
+
+                <a href="/book.html?requirement=${encodeURIComponent('Combo Offer: ' + c.title + ' (₹' + c.offer_price + ')')}" class="btn btn-green w-100 py-3 fw-bold mt-auto fs-6">
+                  <i class="bi bi-calendar-check me-2"></i> Book This Combo Offer
+                </a>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    } else {
+      container.innerHTML = '<div class="col-12 text-center text-muted">No combo offers available right now.</div>';
+    }
+  } catch (err) {
+    console.error('Error loading combo offers:', err);
+  }
 }

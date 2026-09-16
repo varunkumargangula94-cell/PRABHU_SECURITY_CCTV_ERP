@@ -45,7 +45,8 @@ async function runTests() {
 
   // Test 2: Submit Customer Booking
   console.log('\nTest 2: Customer Booking Submission...');
-  const today = new Date().toISOString().split('T')[0];
+  const randomDays = Math.floor(Math.random() * 100) + 10;
+  const futureDate = new Date(Date.now() + randomDays * 86400000).toISOString().split('T')[0];
   const bookingRes = await makeRequest({
     hostname: 'localhost',
     port: 5000,
@@ -61,8 +62,8 @@ async function runTests() {
     city: 'Guntur',
     state: 'Andhra Pradesh',
     pincode: '522001',
-    installation_date: today,
-    time_slot: '09:00 AM - 11:00 AM',
+    installation_date: futureDate,
+    time_slot: '04:00 PM - 06:00 PM',
     cctv_requirement: '4 Cameras',
     camera_count: 4,
     customer_message: 'Please bring 4K dome cameras.'
@@ -129,6 +130,37 @@ async function runTests() {
     console.log(`✅ Public Work Photos Retrieved: ${photoRes.body.work_photos.length} photos available.`);
   } else {
     console.error('❌ Work Photos Retrieval Failed:', photoRes.body);
+    process.exit(1);
+  }
+
+  // Test 6: Combo Offers API
+  console.log('\nTest 6: Combo Offers Public & Admin Retrieval...');
+  const comboRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/combo-offers',
+    method: 'GET'
+  });
+
+  if (comboRes.status === 200 && comboRes.body.combo_offers.length > 0) {
+    console.log(`✅ Public Combo Offers Retrieved: ${comboRes.body.combo_offers.length} combos available.`);
+  } else {
+    console.error('❌ Public Combo Offers Retrieval Failed:', comboRes.body);
+    process.exit(1);
+  }
+
+  const adminComboRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/admin/combo-offers',
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (adminComboRes.status === 200 && adminComboRes.body.combo_offers.length > 0) {
+    console.log(`✅ Admin Combo Offers Retrieved: ${adminComboRes.body.combo_offers.length} combos available.`);
+  } else {
+    console.error('❌ Admin Combo Offers Retrieval Failed:', adminComboRes.body);
     process.exit(1);
   }
 

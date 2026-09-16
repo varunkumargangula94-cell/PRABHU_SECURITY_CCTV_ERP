@@ -15,6 +15,7 @@ const productRoutes = require('./routes/products');
 const serviceRoutes = require('./routes/services');
 const reviewRoutes = require('./routes/reviews');
 const workPhotoRoutes = require('./routes/workPhotos');
+const comboOfferRoutes = require('./routes/comboOffers');
 const adminRoutes = require('./routes/admin');
 
 const app = express();
@@ -56,6 +57,7 @@ app.use('/api', productRoutes);
 app.use('/api', serviceRoutes);
 app.use('/api', reviewRoutes);
 app.use('/api', workPhotoRoutes);
+app.use('/api', comboOfferRoutes);
 app.use('/api', adminRoutes);
 
 // Socket.io Real-Time Event Handlers
