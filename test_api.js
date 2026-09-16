@@ -25,14 +25,14 @@ async function runTests() {
   console.log('🧪 Running End-to-End API Verification Tests...\n');
 
   // Test 1: Admin Login
-  console.log('Test 1: Admin Login (admin / admin123)...');
+  console.log('Test 1: Admin Login (Lankaprabhu / Chiru@123)...');
   const loginRes = await makeRequest({
     hostname: 'localhost',
     port: 5000,
     path: '/api/admin/login',
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
-  }, { username: 'admin', password: 'admin123' });
+  }, { username: 'Lankaprabhu', password: 'Chiru@123' });
 
   if (loginRes.status === 200 && loginRes.body.token) {
     console.log('✅ Admin Login Successful. Received JWT token.');

@@ -126,8 +126,8 @@ function seedData() {
   // Seed Default Admin User
   const adminCheck = db.prepare('SELECT COUNT(*) as count FROM admin_users').get();
   if (adminCheck.count === 0) {
-    const defaultUser = process.env.ADMIN_DEFAULT_USER || 'admin';
-    const defaultPass = process.env.ADMIN_DEFAULT_PASS || 'admin123';
+    const defaultUser = process.env.ADMIN_DEFAULT_USER || 'Lankaprabhu';
+    const defaultPass = process.env.ADMIN_DEFAULT_PASS || 'Chiru@123';
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(defaultPass, salt);
     

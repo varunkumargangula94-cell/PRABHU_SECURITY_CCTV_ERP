@@ -78,13 +78,13 @@ npm run dev
 
 ---
 
-## 🔑 Admin Default Credentials
+## 🔑 Admin Credentials
 
 | Field | Value |
 |-------|-------|
-| **Admin Login URL** | `http://localhost:5000/admin-login.html` |
-| **Username** | `admin` |
-| **Password** | `admin123` |
+| **Admin Login URL** | `https://prabhu-security-cctv-erp.onrender.com/admin-login.html` |
+| **Username** | `Lankaprabhu` |
+| **Password** | `Chiru@123` |
 
 ---
 
