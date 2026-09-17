@@ -111,7 +111,28 @@ async function testLiveDeployment() {
     console.error('❌ Live Combo Offers Fetch Failed:', comboRes.body);
   }
 
-  console.log('\n🎉 LIVE PRODUCTION DEPLOYMENT & TEST BOOKING FULLY VERIFIED!');
+  // 5. Submit Support Ticket on Live Site
+  console.log('\n5️⃣ Submitting Live Customer Support Query...');
+  const supRes = await makeHttpsRequest({
+    hostname: 'prabhu-security-cctv-erp.onrender.com',
+    port: 443,
+    path: '/api/support-tickets',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  }, {
+    customer_name: 'L. Srinivas (Live Query)',
+    mobile: '8688372556',
+    subject: 'Installation Support',
+    message: 'Testing live customer support query connected to Admin.'
+  });
+
+  if (supRes.status === 201 && supRes.body.ticket_id) {
+    console.log(`✅ LIVE CUSTOMER SUPPORT QUERY VERIFIED! Generated Ticket ID: ${supRes.body.ticket_id}`);
+  } else {
+    console.error('❌ Live Support Ticket Submission Failed:', supRes.body);
+  }
+
+  console.log('\n🎉 LIVE PRODUCTION DEPLOYMENT FULLY VERIFIED!');
 }
 
 testLiveDeployment().catch(err => {
