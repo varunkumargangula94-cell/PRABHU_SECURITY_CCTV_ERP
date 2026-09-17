@@ -259,6 +259,63 @@ function seedData() {
     console.log('✅ Default CCTV products seeded.');
   }
 
+  // Ensure user uploaded real camera product photos exist in database
+  const userProducts = [
+    {
+      name: 'CP Plus 5MP HD Security Camera',
+      type: 'Dome Camera',
+      resolution: '5MP HD (2560x1920)',
+      night_vision: 'Smart IR Color Night Vision',
+      storage_option: 'MicroSD (up to 256GB) / DVR',
+      price: 2999.00,
+      image_url: '/images/products/cp_plus_cam.jpeg',
+      description: 'CP Plus high-performance indoor/outdoor security camera with smart IR night vision and crystal clear audio recording.'
+    },
+    {
+      name: 'ProShield Dual Lens 360° Smart Camera',
+      type: 'PTZ Camera',
+      resolution: '2.4K Dual Lens',
+      night_vision: 'Smart Dual Spotlight Night Vision',
+      storage_option: '256GB MicroSD / NVR',
+      price: 4499.00,
+      image_url: '/images/products/dual_lens_cam.jpeg',
+      description: 'Dual-lens wide angle camera featuring simultaneous dual-screen tracking, 360° pan-tilt view, and active siren alarm.'
+    },
+    {
+      name: 'SolarPro Wire-Free Outdoor Camera',
+      type: 'Solar Camera',
+      resolution: '4K Ultra HD',
+      night_vision: 'Full Color Spotlight Night Vision',
+      storage_option: 'Cloud Storage & MicroSD',
+      price: 6499.00,
+      image_url: '/images/products/solar_pro_cam.jpeg',
+      description: 'High efficiency solar powered security camera with zero wiring required. Ideal for farmhouses, construction sites & gates.'
+    },
+    {
+      name: 'UltraGuard 8MP 4K Surveillance Suite',
+      type: 'System Kit',
+      resolution: '8MP 4K Ultra HD',
+      night_vision: 'Extended Range Night Vision (50m)',
+      storage_option: '2TB Surveillance HDD Included',
+      price: 14999.00,
+      image_url: '/images/products/ultra_hd_setup.png',
+      description: 'Commercial grade 4K CCTV surveillance system for offices, factories, and residential buildings with high durability.'
+    }
+  ];
+
+  const checkStmt = db.prepare('SELECT id FROM products WHERE image_url = ? OR name = ?');
+  const insertStmt = db.prepare(`
+    INSERT INTO products (name, type, resolution, night_vision, storage_option, price, image_url, description)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  userProducts.forEach(p => {
+    const exists = checkStmt.get(p.image_url, p.name);
+    if (!exists) {
+      insertStmt.run(p.name, p.type, p.resolution, p.night_vision, p.storage_option, p.price, p.image_url, p.description);
+    }
+  });
+
   // Seed Default Services
   const serviceCheck = db.prepare('SELECT COUNT(*) as count FROM services').get();
   if (serviceCheck.count === 0) {
