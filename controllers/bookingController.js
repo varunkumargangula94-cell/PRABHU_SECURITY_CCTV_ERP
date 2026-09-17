@@ -116,7 +116,7 @@ exports.getAllBookings = (req, res) => {
   try {
     const { status, date, time_slot, search } = req.query;
 
-    let query = 'SELECT * FROM bookings WHERE 1=1';
+    let query = 'SELECT * FROM bookings WHERE (is_deleted = 0 OR is_deleted IS NULL)';
     const params = [];
 
     if (status && status !== 'ALL') {
@@ -195,3 +195,63 @@ exports.updateBookingStatus = (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to update status.' });
   }
 };
+
+// Soft-Delete Booking (Move to Recycle Bin)
+exports.softDeleteBooking = (req, res) => {
+  try {
+    const { id } = req.params;
+    const booking = db.prepare('SELECT * FROM bookings WHERE id = ?').get(id);
+    if (!booking) {
+      return res.status(404).json({ success: false, message: 'Booking not found.' });
+    }
+
+    db.prepare('UPDATE bookings SET is_deleted = 1 WHERE id = ?').run(id);
+    return res.json({ success: true, message: '🗑️ Booking moved to Recycle Bin.' });
+  } catch (error) {
+    console.error('Error deleting booking:', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete booking.' });
+  }
+};
+
+// Restore Booking from Recycle Bin
+exports.restoreBooking = (req, res) => {
+  try {
+    const { id } = req.params;
+    db.prepare('UPDATE bookings SET is_deleted = 0 WHERE id = ?').run(id);
+    return res.json({ success: true, message: '♻️ Booking restored from Recycle Bin.' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to restore booking.' });
+  }
+};
+
+// Permanently Delete Single Booking
+exports.permanentDeleteBooking = (req, res) => {
+  try {
+    const { id } = req.params;
+    db.prepare('DELETE FROM bookings WHERE id = ?').run(id);
+    return res.json({ success: true, message: '❌ Booking permanently deleted from database.' });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to permanently delete booking.' });
+  }
+};
+
+// Get All Items in Recycle Bin
+exports.getBinItems = (req, res) => {
+  try {
+    const deletedBookings = db.prepare('SELECT * FROM bookings WHERE is_deleted = 1 ORDER BY id DESC').all();
+    return res.json({ success: true, bin_items: deletedBookings });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to retrieve bin items.' });
+  }
+};
+
+// Empty All Items in Recycle Bin
+exports.emptyBin = (req, res) => {
+  try {
+    const result = db.prepare('DELETE FROM bookings WHERE is_deleted = 1').run();
+    return res.json({ success: true, message: `🧹 Recycle bin emptied (${result.changes} items permanently removed).` });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: 'Failed to empty recycle bin.' });
+  }
+};
+

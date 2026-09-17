@@ -6,6 +6,18 @@ document.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('adminToken')) {
     window.location.href = '/admin-dashboard.html';
   }
+  // Password Eye Toggle Handler
+  const toggleBtn = document.getElementById('btn-toggle-password');
+  const passInput = document.getElementById('password');
+  const toggleIcon = document.getElementById('toggle-password-icon');
+
+  if (toggleBtn && passInput && toggleIcon) {
+    toggleBtn.addEventListener('click', () => {
+      const isPassword = passInput.getAttribute('type') === 'password';
+      passInput.setAttribute('type', isPassword ? 'text' : 'password');
+      toggleIcon.className = isPassword ? 'bi bi-eye-slash-fill text-danger' : 'bi bi-eye';
+    });
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

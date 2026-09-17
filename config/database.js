@@ -44,9 +44,17 @@ function initDatabase() {
       camera_count INTEGER DEFAULT 0,
       customer_message TEXT,
       status TEXT DEFAULT 'NEW',
+      is_deleted INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
+
+  // Migration for existing bookings table
+  try {
+    db.exec(`ALTER TABLE bookings ADD COLUMN is_deleted INTEGER DEFAULT 0;`);
+  } catch (err) {
+    // Column already exists
+  }
 
   // 3. Time Slots
   db.exec(`
@@ -135,6 +143,20 @@ function initDatabase() {
       is_active INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
+
+  // 9. Customer Support Tickets Table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS support_tickets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      ticket_id TEXT UNIQUE NOT NULL,
+      customer_name TEXT NOT NULL,
+      mobile TEXT NOT NULL,
+      subject TEXT NOT NULL,
+      message TEXT NOT NULL,
+      status TEXT DEFAULT 'OPEN',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `);
 

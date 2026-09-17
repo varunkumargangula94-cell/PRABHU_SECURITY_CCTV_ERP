@@ -77,6 +77,14 @@ function initSocketIO() {
         loadAdminReviews('ALL');
       }
     });
+
+    socket.on('new_support_ticket', (data) => {
+      showRealtimeSupportToast(data.message);
+      loadAdminDashboardData();
+      if (document.getElementById('tab-support').classList.contains('active')) {
+        loadAdminSupportTickets();
+      }
+    });
   } catch (err) {
     console.error('Socket.io connection error:', err);
   }
@@ -92,6 +100,15 @@ function showRealtimeToast(message, booking) {
 
   const badgeHeader = document.getElementById('header-unread-badge');
   if (badgeHeader) badgeHeader.classList.remove('d-none');
+}
+
+function showRealtimeSupportToast(message) {
+  const toastEl = document.getElementById('realtime-alert-toast');
+  const msgEl = document.getElementById('toast-message');
+  if (!toastEl || !msgEl) return;
+
+  msgEl.innerHTML = `💬 <strong>${message}</strong>`;
+  toastEl.classList.remove('d-none');
 }
 
 function hideToast() {
@@ -143,6 +160,8 @@ function switchTab(tabId) {
   if (tabId === 'tab-reviews') loadAdminReviews('ALL');
   if (tabId === 'tab-gallery') loadAdminGallery();
   if (tabId === 'tab-services') loadAdminServices();
+  if (tabId === 'tab-support') loadAdminSupportTickets();
+  if (tabId === 'tab-bin') loadAdminBin();
 }
 
 // Load Dashboard Overview & Stats
@@ -174,6 +193,16 @@ async function loadAdminDashboardData() {
       if (badgeRev) {
         badgeRev.textContent = s.pending_reviews;
         badgeRev.classList.toggle('d-none', s.pending_reviews === 0);
+      }
+      const badgeBin = document.getElementById('badge-bin-count');
+      if (badgeBin) {
+        badgeBin.textContent = s.bin_count || 0;
+        badgeBin.classList.toggle('d-none', !s.bin_count || s.bin_count === 0);
+      }
+      const badgeSup = document.getElementById('badge-open-support');
+      if (badgeSup) {
+        badgeSup.textContent = s.open_support_tickets || 0;
+        badgeSup.classList.toggle('d-none', !s.open_support_tickets || s.open_support_tickets === 0);
       }
 
       document.getElementById('badge-new-work-header').textContent = `${s.new_requests} Pending Requests`;
@@ -227,7 +256,8 @@ function renderNewWorkCards(bookings, container) {
         <button class="btn btn-sm btn-primary py-2" onclick="updateBookingStatus(${b.id}, 'ACCEPTED')"><i class="bi bi-check-lg"></i> Accept</button>
         <button class="btn btn-sm btn-info text-white py-2" onclick="updateBookingStatus(${b.id}, 'ASSIGNED')"><i class="bi bi-person-check"></i> Assign</button>
         <button class="btn btn-sm btn-success py-2" onclick="updateBookingStatus(${b.id}, 'COMPLETED')"><i class="bi bi-check-circle"></i> Mark Completed</button>
-        <button class="btn btn-sm btn-outline-danger py-2" onclick="updateBookingStatus(${b.id}, 'CANCELLED')"><i class="bi bi-x-circle"></i> Cancel</button>
+        <button class="btn btn-sm btn-outline-warning py-2" onclick="updateBookingStatus(${b.id}, 'CANCELLED')"><i class="bi bi-x-circle"></i> Cancel</button>
+        <button class="btn btn-sm btn-outline-danger py-2" onclick="softDeleteBooking(${b.id})" title="Move to Bin"><i class="bi bi-trash"></i> Move to Bin</button>
       </div>
     </div>
   `).join('');
@@ -279,7 +309,7 @@ async function loadBookingsTable() {
           <td><span class="badge badge-status badge-${b.status.toLowerCase()}">${b.status}</span></td>
           <td>
             <button class="btn btn-sm btn-outline-dark me-1" onclick="viewBookingDetails(${b.id})" title="View Details"><i class="bi bi-eye"></i></button>
-            <select class="form-select form-select-sm d-inline-block w-auto" onchange="updateBookingStatus(${b.id}, this.value)">
+            <select class="form-select form-select-sm d-inline-block w-auto me-1" onchange="updateBookingStatus(${b.id}, this.value)">
               <option value="NEW" ${b.status === 'NEW' ? 'selected' : ''}>NEW</option>
               <option value="ACCEPTED" ${b.status === 'ACCEPTED' ? 'selected' : ''}>ACCEPTED</option>
               <option value="ASSIGNED" ${b.status === 'ASSIGNED' ? 'selected' : ''}>ASSIGNED</option>
@@ -287,6 +317,7 @@ async function loadBookingsTable() {
               <option value="COMPLETED" ${b.status === 'COMPLETED' ? 'selected' : ''}>COMPLETED</option>
               <option value="CANCELLED" ${b.status === 'CANCELLED' ? 'selected' : ''}>CANCELLED</option>
             </select>
+            <button class="btn btn-sm btn-outline-danger" onclick="softDeleteBooking(${b.id})" title="Move to Bin"><i class="bi bi-trash"></i></button>
           </td>
         </tr>
       `).join('');
@@ -355,10 +386,11 @@ async function viewBookingDetails(id) {
         <button class="btn btn-primary" onclick="updateBookingStatus(${b.id}, 'ACCEPTED')">Accept</button>
         <button class="btn btn-info text-white" onclick="updateBookingStatus(${b.id}, 'ASSIGNED')">Assign</button>
         <button class="btn btn-success" onclick="updateBookingStatus(${b.id}, 'COMPLETED')">Mark Completed</button>
-        <button class="btn btn-danger" onclick="updateBookingStatus(${b.id}, 'CANCELLED')">Cancel</button>
+        <button class="btn btn-warning" onclick="updateBookingStatus(${b.id}, 'CANCELLED')">Cancel</button>
+        <button class="btn btn-outline-danger ms-auto" onclick="softDeleteBooking(${b.id})"><i class="bi bi-trash"></i> Move to Bin</button>
       `;
 
-      const modal = new bootstrap.Modal(document.getElementById('bookingDetailModal'));
+      const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('bookingDetailModal'));
       modal.show();
     }
   } catch (err) {
@@ -454,7 +486,7 @@ function openAddProductModal() {
   document.getElementById('product-modal-alert').innerHTML = '';
   document.getElementById('prod_is_active').checked = true;
 
-  const modal = new bootstrap.Modal(document.getElementById('addEditProductModal'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addEditProductModal'));
   modal.show();
 }
 
@@ -477,7 +509,7 @@ function openEditProductModal(id) {
   document.getElementById('prod_description').value = p.description || '';
   document.getElementById('prod_is_active').checked = (p.is_active === 1);
 
-  const modal = new bootstrap.Modal(document.getElementById('addEditProductModal'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addEditProductModal'));
   modal.show();
 }
 
@@ -574,7 +606,7 @@ function openAddComboModal() {
   document.getElementById('combo-modal-alert').innerHTML = '';
   document.getElementById('combo_is_active').checked = true;
 
-  const modal = new bootstrap.Modal(document.getElementById('addEditComboModal'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addEditComboModal'));
   modal.show();
 }
 
@@ -600,7 +632,7 @@ function openEditComboModal(id) {
   document.getElementById('combo_description').value = c.description || '';
   document.getElementById('combo_is_active').checked = (c.is_active === 1);
 
-  const modal = new bootstrap.Modal(document.getElementById('addEditComboModal'));
+  const modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('addEditComboModal'));
   modal.show();
 }
 
@@ -1057,3 +1089,189 @@ function setupFormListeners() {
     });
   }
 }
+
+// Soft Delete Booking (Move to Recycle Bin)
+async function softDeleteBooking(id) {
+  if (!confirm('Are you sure you want to move this booking to Recycle Bin?')) return;
+  try {
+    const res = await fetch(`/api/admin/bookings/${id}/delete`, {
+      method: 'PUT',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadAdminDashboardData();
+      if (document.getElementById('tab-bookings').classList.contains('active')) loadBookingsTable();
+      if (document.getElementById('tab-new-work').classList.contains('active')) loadNewWorkDedicated();
+      if (document.getElementById('tab-bin').classList.contains('active')) loadAdminBin();
+
+      const modalEl = document.getElementById('bookingDetailModal');
+      const modal = bootstrap.Modal.getInstance(modalEl);
+      if (modal) modal.hide();
+    } else {
+      alert(data.message || 'Failed to move booking to bin.');
+    }
+  } catch (err) {
+    console.error('Error soft deleting booking:', err);
+  }
+}
+
+// Load Recycle Bin Items
+async function loadAdminBin() {
+  const tbody = document.getElementById('admin-bin-table-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4"><div class="spinner-border text-danger spinner-border-sm"></div> Loading Recycle Bin...</td></tr>';
+
+  try {
+    const res = await fetch('/api/admin/bin', { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success && data.bin_items.length > 0) {
+      tbody.innerHTML = data.bin_items.map(b => `
+        <tr>
+          <td><strong class="text-danger">${b.booking_id}</strong></td>
+          <td>${b.customer_name}</td>
+          <td><a href="tel:${b.mobile}" class="text-decoration-none fw-bold text-dark"><i class="bi bi-telephone me-1 text-success"></i>${b.mobile}</a></td>
+          <td><span class="small">${b.installation_date}</span><br><span class="badge bg-light text-dark border">${b.time_slot}</span></td>
+          <td><span class="small fw-bold">${b.cctv_requirement}</span></td>
+          <td><span class="badge bg-secondary">${b.status} (DELETED)</span></td>
+          <td>
+            <button class="btn btn-sm btn-outline-success me-1" onclick="restoreBooking(${b.id})" title="Restore to Active Bookings">
+              <i class="bi bi-arrow-counterclockwise"></i> Restore
+            </button>
+            <button class="btn btn-sm btn-danger" onclick="permanentDeleteBooking(${b.id})" title="Delete Permanently">
+              <i class="bi bi-x-circle"></i> Permanent Delete
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-5"><i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i> Recycle Bin is empty! No deleted bookings.</td></tr>';
+    }
+  } catch (err) {
+    console.error('Error loading bin items:', err);
+  }
+}
+
+// Restore Booking from Bin
+async function restoreBooking(id) {
+  try {
+    const res = await fetch(`/api/admin/bookings/${id}/restore`, {
+      method: 'PUT',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadAdminBin();
+      loadAdminDashboardData();
+    }
+  } catch (err) {
+    console.error('Error restoring booking:', err);
+  }
+}
+
+// Permanent Delete Booking
+async function permanentDeleteBooking(id) {
+  if (!confirm('⚠️ PERMANENT DELETE WARNING: Are you sure you want to permanently erase this booking from database? This cannot be undone!')) return;
+  try {
+    const res = await fetch(`/api/admin/bookings/${id}/permanent`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      loadAdminBin();
+      loadAdminDashboardData();
+    }
+  } catch (err) {
+    console.error('Error deleting permanently:', err);
+  }
+}
+
+// Empty Bin
+async function emptyBin() {
+  if (!confirm('🚨 EMPTY RECYCLE BIN: Are you sure you want to permanently delete ALL items in the Recycle Bin?')) return;
+  try {
+    const res = await fetch('/api/admin/bin/empty', {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert(data.message);
+      loadAdminBin();
+      loadAdminDashboardData();
+    }
+  } catch (err) {
+    console.error('Error emptying bin:', err);
+  }
+}
+
+// Load Support Tickets Admin
+async function loadAdminSupportTickets() {
+  const grid = document.getElementById('admin-support-grid');
+  if (!grid) return;
+
+  grid.innerHTML = '<div class="col-12 text-center text-muted py-4"><div class="spinner-border text-info"></div> Loading support tickets...</div>';
+
+  try {
+    const res = await fetch('/api/admin/support-tickets', { headers: getAuthHeaders() });
+    const data = await res.json();
+    if (data.success && data.tickets.length > 0) {
+      grid.innerHTML = data.tickets.map(t => `
+        <div class="col-md-6 col-lg-4">
+          <div class="card border-0 shadow-sm rounded-4 p-3 h-100 d-flex flex-column ${t.status === 'OPEN' ? 'border-start border-5 border-info' : 'bg-light'}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="badge ${t.status === 'OPEN' ? 'bg-info text-dark' : t.status === 'IN_PROGRESS' ? 'bg-warning text-dark' : 'bg-success'}">${t.status}</span>
+              <span class="small text-muted">${new Date(t.created_at).toLocaleString()}</span>
+            </div>
+            <h6 class="fw-bold text-success-dark mb-1">${t.ticket_id}: ${t.subject || 'Customer Support'}</h6>
+            <div class="fw-bold text-dark mb-2"><i class="bi bi-person-fill text-warning me-1"></i> ${t.customer_name}</div>
+            <div class="mb-2">
+              <a href="tel:${t.mobile}" class="btn btn-sm btn-outline-success fw-bold py-1 px-2"><i class="bi bi-telephone-fill me-1"></i> ${t.mobile}</a>
+              <a href="https://wa.me/91${t.mobile.replace(/\D/g, '')}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold py-1 px-2"><i class="bi bi-whatsapp me-1"></i> WhatsApp</a>
+            </div>
+            <p class="text-muted small mb-3 flex-grow-1 p-2 bg-white rounded border">"${t.message}"</p>
+            <div class="d-flex gap-2 mt-auto">
+              ${t.status !== 'RESOLVED' ? `<button class="btn btn-sm btn-success flex-grow-1" onclick="updateTicketStatus(${t.id}, 'RESOLVED')"><i class="bi bi-check-lg"></i> Mark Resolved</button>` : ''}
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteTicket(${t.id})"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    } else {
+      grid.innerHTML = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-check-circle fs-3 text-success d-block mb-1"></i> No support tickets. All customer queries answered!</div>';
+    }
+  } catch (err) {
+    console.error('Error loading support tickets:', err);
+  }
+}
+
+async function updateTicketStatus(id, newStatus) {
+  try {
+    await fetch(`/api/admin/support-tickets/${id}/status`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ status: newStatus })
+    });
+    loadAdminSupportTickets();
+    loadAdminDashboardData();
+  } catch (err) {
+    console.error('Error updating ticket status:', err);
+  }
+}
+
+async function deleteTicket(id) {
+  if (!confirm('Are you sure you want to delete this support ticket?')) return;
+  try {
+    await fetch(`/api/admin/support-tickets/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders()
+    });
+    loadAdminSupportTickets();
+    loadAdminDashboardData();
+  } catch (err) {
+    console.error('Error deleting ticket:', err);
+  }
+}
+

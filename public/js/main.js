@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadHomeGallery();
   loadPublicReviews();
   setupReviewForm();
+  setupSupportForm();
 });
 
 // Load Products
@@ -267,4 +268,62 @@ async function loadComboOffers() {
   } catch (err) {
     console.error('Error loading combo offers:', err);
   }
+}
+
+// Setup Customer Support Form Handler
+function setupSupportForm() {
+  const form = document.getElementById('public-support-form');
+  if (!form) return;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertBox = document.getElementById('support-alert-box');
+    const name = document.getElementById('sup_name').value;
+    const mobile = document.getElementById('sup_mobile').value;
+    const subject = document.getElementById('sup_subject').value;
+    const message = document.getElementById('sup_message').value;
+
+    const btn = document.getElementById('btn-submit-support');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Sending to Admin...';
+
+    try {
+      const res = await fetch('/api/support-tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: name,
+          mobile: mobile,
+          subject: subject,
+          message: message
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alertBox.className = 'alert alert-success mt-2';
+        alertBox.innerHTML = `✅ ${data.message}`;
+        form.reset();
+        setTimeout(() => {
+          const modalEl = document.getElementById('customerSupportModal');
+          const modal = bootstrap.Modal.getInstance(modalEl);
+          if (modal) modal.hide();
+          alertBox.className = 'd-none';
+          btn.disabled = false;
+          btn.innerHTML = '<i class="bi bi-send-fill me-1"></i> Submit to Admin';
+        }, 3000);
+      } else {
+        alertBox.className = 'alert alert-danger mt-2';
+        alertBox.innerHTML = `❌ ${data.message}`;
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-send-fill me-1"></i> Submit to Admin';
+      }
+    } catch (err) {
+      console.error('Support submit error:', err);
+      alertBox.className = 'alert alert-danger mt-2';
+      alertBox.innerHTML = '❌ Server error sending support query.';
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-send-fill me-1"></i> Submit to Admin';
+    }
+  });
 }

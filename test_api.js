@@ -164,6 +164,92 @@ async function runTests() {
     process.exit(1);
   }
 
+  // Test 7: Customer Support Query Submission & Admin Fetch
+  console.log('\nTest 7: Customer Support Query Submission & Admin Retrieval...');
+  const supRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/support-tickets',
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  }, {
+    customer_name: 'K. Venkatesh',
+    mobile: '9123456789',
+    subject: 'Camera Price Quote Question',
+    message: 'I want a quotation for 8 cameras for my factory in Jeedimetla.'
+  });
+
+  if (supRes.status === 201 && supRes.body.ticket_id) {
+    console.log(`✅ Customer Support Query Submitted! Ticket ID: ${supRes.body.ticket_id}`);
+  } else {
+    console.error('❌ Support Ticket Submission Failed:', supRes.body);
+    process.exit(1);
+  }
+
+  const adminSupRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/admin/support-tickets',
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (adminSupRes.status === 200 && adminSupRes.body.tickets.length > 0) {
+    console.log(`✅ Admin Support Tickets Retrieved: ${adminSupRes.body.tickets.length} tickets found.`);
+  } else {
+    console.error('❌ Admin Support Tickets Retrieval Failed:', adminSupRes.body);
+    process.exit(1);
+  }
+
+  // Test 8: Booking Soft Delete & Recycle Bin
+  console.log('\nTest 8: Booking Soft-Delete & Recycle Bin Restoration...');
+  const createdBookingId = bookingRes.body.booking.id;
+
+  const softDelRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: `/api/admin/bookings/${createdBookingId}/delete`,
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (softDelRes.status === 200) {
+    console.log('✅ Booking Moved to Recycle Bin.');
+  } else {
+    console.error('❌ Soft Delete Failed:', softDelRes.body);
+    process.exit(1);
+  }
+
+  const binRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: '/api/admin/bin',
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (binRes.status === 200 && binRes.body.bin_items.length > 0) {
+    console.log(`✅ Recycle Bin Verified: ${binRes.body.bin_items.length} items in Bin.`);
+  } else {
+    console.error('❌ Bin Fetch Failed:', binRes.body);
+    process.exit(1);
+  }
+
+  const restoreRes = await makeRequest({
+    hostname: 'localhost',
+    port: 5000,
+    path: `/api/admin/bookings/${createdBookingId}/restore`,
+    method: 'PUT',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  if (restoreRes.status === 200) {
+    console.log('✅ Booking Successfully Restored from Recycle Bin to Active List!');
+  } else {
+    console.error('❌ Restore Failed:', restoreRes.body);
+    process.exit(1);
+  }
+
   console.log('\n🎉 ALL END-TO-END VERIFICATION TESTS PASSED SUCCESSFULLY!');
 }
 

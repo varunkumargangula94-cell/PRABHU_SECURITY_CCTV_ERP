@@ -46,13 +46,18 @@ exports.loginAdmin = (req, res) => {
 
 exports.getDashboardStats = (req, res) => {
   try {
-    const total_bookings = db.prepare('SELECT COUNT(*) as count FROM bookings').get().count;
-    const new_requests = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'NEW'").get().count;
-    const accepted = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'ACCEPTED'").get().count;
-    const assigned = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'ASSIGNED'").get().count;
-    const in_progress = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'IN_PROGRESS'").get().count;
-    const completed = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'COMPLETED'").get().count;
-    const cancelled = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE status = 'CANCELLED'").get().count;
+    const notDeletedWhere = "WHERE (is_deleted = 0 OR is_deleted IS NULL)";
+
+    const total_bookings = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere}`).get().count;
+    const new_requests = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'NEW'`).get().count;
+    const accepted = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'ACCEPTED'`).get().count;
+    const assigned = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'ASSIGNED'`).get().count;
+    const in_progress = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'IN_PROGRESS'`).get().count;
+    const completed = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'COMPLETED'`).get().count;
+    const cancelled = db.prepare(`SELECT COUNT(*) as count FROM bookings ${notDeletedWhere} AND status = 'CANCELLED'`).get().count;
+
+    const bin_count = db.prepare("SELECT COUNT(*) as count FROM bookings WHERE is_deleted = 1").get().count;
+    const open_support_tickets = db.prepare("SELECT COUNT(*) as count FROM support_tickets WHERE status = 'OPEN'").get().count;
 
     const total_reviews = db.prepare('SELECT COUNT(*) as count FROM reviews').get().count;
     const pending_reviews = db.prepare("SELECT COUNT(*) as count FROM reviews WHERE status = 'PENDING'").get().count;
@@ -60,8 +65,8 @@ exports.getDashboardStats = (req, res) => {
 
     const total_work_photos = db.prepare('SELECT COUNT(*) as count FROM work_photos').get().count;
 
-    const recent_new_work = db.prepare("SELECT * FROM bookings WHERE status = 'NEW' ORDER BY created_at DESC LIMIT 10").all();
-    const recent_bookings = db.prepare("SELECT * FROM bookings ORDER BY created_at DESC LIMIT 10").all();
+    const recent_new_work = db.prepare(`SELECT * FROM bookings ${notDeletedWhere} AND status = 'NEW' ORDER BY created_at DESC LIMIT 10`).all();
+    const recent_bookings = db.prepare(`SELECT * FROM bookings ${notDeletedWhere} ORDER BY created_at DESC LIMIT 10`).all();
 
     return res.json({
       success: true,
@@ -72,6 +77,8 @@ exports.getDashboardStats = (req, res) => {
         in_progress: in_progress + assigned,
         completed,
         cancelled,
+        bin_count,
+        open_support_tickets,
         total_reviews,
         pending_reviews,
         approved_reviews,
